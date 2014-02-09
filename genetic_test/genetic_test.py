@@ -6,6 +6,25 @@ image_sources = ["sets", "sets_a", "sets_b", "sets_c"]
 def get_imprinter(imagefeed): 
     return imprinters.Imprinter(imagefeed, "initial", "sorted", num_prototypes=10) 
 
+def reproduce(population):
+    """Reproduces the instruction strings randomly, via genetic algorithm."""
+    new_population = []
+
+    for a in population:
+        for b in population:
+            child = []
+            for n in range(0, len(a)):
+                child.append(random.choice([a, b])[n])
+
+            new_population.append(child)
+
+    return random.sample(new_population, 6)
+            
+def screen(population, fitnesses):
+    mapping = zip(population, fitnesses)
+    best = sorted(mapping, key=lambda x: x[1])[-3:]
+    return map(lambda x: x[0], best)
+
 def print_and_log(text):
     print text
     with open("final_output.log", "a") as f:
@@ -32,13 +51,16 @@ def test_genetic(generations, imagefeed_getter, preset):
     print_and_log("{0} => {1}".format(best[0], best[1]))
 
 def get_fitness(string, imagefeed_getter):
-    imprinter = get_imprinter(imagefeed_getter())
-    monkey = monkeys.GeneticMonkey(imprinter, string)
+    print_and_log(string)
     values = []
-    runs = 0
+    
     for _ in range(10):
+        runs = 0
+        imprinter = get_imprinter(imagefeed_getter())
+        monkey = monkeys.GeneticMonkey(imprinter, string)
+        print_and_log("We are at {0}".format(_))
         while runs < 10:
-            #print "Run {0} begins!".format(runs)
+            print "Run {0} begins!".format(runs)
             try:
                 runs += monkey.run(remaining=(10-runs))
                 values.append(monkey.get_results())
@@ -49,9 +71,11 @@ def get_fitness(string, imagefeed_getter):
                 else:
                     raise
 
-        return sum(values)/float(len(values))
+    print_and_log(sum(values)/float(len(values)))
+    print_and_log(values)
+    return sum(values)/float(len(values))
 
-def get_initial_population(preset=True, size=3):
+def get_initial_population(preset=True, size=5):
     """Returns a list of strings of instructions."""
     if not preset:
         instructions_per = 10
@@ -68,6 +92,7 @@ def get_initial_population(preset=True, size=3):
         population =[ ['no 1'] * 10, ['al 1'] * 9 + ['rf 2'], ['af 1'] * 8 + ['rl 1'] * 2, 
                 get_initial_population(preset=False, size=1)[0] ]
     
+    print population 
     return population
 
 
