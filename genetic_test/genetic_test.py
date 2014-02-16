@@ -18,7 +18,7 @@ def reproduce(population):
 
             new_population.append(child)
 
-    return random.sample(new_population, 6)
+    return random.sample(new_population, 5)
             
 def screen(population, fitnesses):
     mapping = zip(population, fitnesses)
@@ -57,7 +57,7 @@ def get_fitness(string, imagefeed_getter):
     for _ in range(10):
         runs = 0
         imprinter = get_imprinter(imagefeed_getter())
-        monkey = monkeys.GeneticMonkey(imprinter, string)
+        monkey = monkeys.GeneticMonkey(imprinter, string[:])
         print_and_log("We are at {0}".format(_))
         while runs < 10:
             print "Run {0} begins!".format(runs)
@@ -101,6 +101,6 @@ def get_initial_population(preset=True, size=5):
 
 for source in image_sources:
     utils.print_and_log("SOURCE {0}:".format(source))
-    test_genetic(10, lambda: imagefeeds.SortedImageFeed(source, "feed"), False)
+    test_genetic(5, lambda: imagefeeds.SortedImageFeed(source, "feed"), False)
 
 
